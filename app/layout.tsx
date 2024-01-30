@@ -1,5 +1,7 @@
-import { montserrat } from './ui/fonts';
+import { roboto } from './ui/fonts';
 import './ui/global.css'
+import TopNav from './ui/nav/topnav';
+import { ClerkProvider } from '@clerk/nextjs'
 
 export default function RootLayout({
   children,
@@ -7,13 +9,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.className} antialiased`}>{children}
-      
-      <footer className='py-10 flex justify-center items-center'>
-        Hecho con ❤ por ProsegurCash
-      </footer>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${roboto.className} antialiased`}>
+          <TopNav />
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
+
   );
 }

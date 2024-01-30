@@ -9,6 +9,8 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { connectDB } from '@/app/lib/mongoose'
+import Document from '@/app/lib/models/Document'
 
 export async function fetchRevenue() {
   // Add noStore() here to prevent the response from being cached.
@@ -19,7 +21,7 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    //await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -34,6 +36,8 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
+    //await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
@@ -87,7 +91,46 @@ export async function fetchCardData() {
   }
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
+export async function fetchFilteredInfo(
+  query: string, 
+  currentPage: number
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    connectDB()
+    const variables = query.split(' ')    
+    var search = ''
+    var linea = ''
+    for (var i = 0; i < variables.length; i++) {
+        linea = `{ "$or": [
+            {"category": { "$regex":"${variables[i]}", "$options": "i"}}, 
+            {"title": { "$regex":"${variables[i]}", "$options": "i"}}, 
+            {"description": { "$regex":"${variables[i]}", "$options": "i"}}, 
+            {"data": { "$regex":"${variables[i]}", "$options": "i"}}, 
+            {"tags": { "$regex":"${variables[i]}", "$options": "i"}}
+        ]}`
+    
+        if (i == 0) {
+            search = `[{"$match": {"$and": [` + linea
+        } else {
+            search = search + `,` + linea
+        }
+    }
+    if (search != '') { search = search + `]}}]` }
+    const documents = await Document.aggregate(JSON.parse(search))
+
+    if (documents.length == 0) return ""
+    console.log(documents)
+    return documents
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch info.');
+}
+}
+
+
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
@@ -115,7 +158,6 @@ export async function fetchFilteredInvoices(
       ORDER BY invoices.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
-
     return invoices.rows;
   } catch (error) {
     console.error('Database Error:', error);
