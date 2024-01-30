@@ -2,6 +2,7 @@ import { roboto } from './ui/fonts';
 import './ui/global.css'
 import TopNav from './ui/nav/topnav';
 import { ClerkProvider } from '@clerk/nextjs'
+import { Analytics } from '@vercel/analytics/react';
 
 export default function RootLayout({
   children,
@@ -14,6 +15,7 @@ export default function RootLayout({
         <body className={`${roboto.className} antialiased`}>
           <TopNav />
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

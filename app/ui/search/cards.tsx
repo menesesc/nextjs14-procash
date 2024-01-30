@@ -4,32 +4,14 @@ import {
     BugAntIcon,
     ShareIcon
   } from '@heroicons/react/24/outline';
-import { lusitana, montserrat, roboto } from '@/app/ui/fonts';
-import Link from 'next/link';
+import { roboto } from '@/app/ui/fonts';
 import { ShareCard } from './buttons';
 const iconMap = {
   errores: BugAntIcon,
   partes: ArchiveBoxIcon,
 };
   
-  export default async function CardWrapper() {
-    return (
-      <>
-        {/* NOTE: comment in this code when you get to this point in the course */}
-  
-        {/* <Card title="Collected" value={totalPaidInvoices} type="collected" />
-        <Card title="Pending" value={totalPendingInvoices} type="pending" />
-        <Card title="Total Invoices" value={numberOfInvoices} type="invoices" />
-        <Card
-          title="Total Customers"
-          value={numberOfCustomers}
-          type="customers"
-        /> */}
-      </>
-    );
-  }
-  
-  export function Card({
+   export function Card({
     category,
     title,
     description,
@@ -65,7 +47,7 @@ const iconMap = {
                 </p>
                 <div className="grid justify-items-end ...">
                   <div className="flex flex-row gap-4">
-                    <ShareCard title={title} />
+                    {/* <ShareCard title={title} /> */}
                   </div>
                 </div>
                 
