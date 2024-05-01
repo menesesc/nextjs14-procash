@@ -1,9 +1,10 @@
 import { roboto } from './ui/fonts';
 import './ui/global.css'
 import TopNav from './ui/nav/topnav';
-import { ClerkProvider } from '@clerk/nextjs'
+// import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/react';
-
+import { AppWrapper } from './context';
+import { Toaster } from "@/components/ui/toaster"
 export const metadata = {
   title:"ProCash",
   description:"Herramientas para tecnicos de Prosegur Cash",
@@ -20,15 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
       <html lang="en">
         <body className={`${roboto.className} antialiased`}>
           <TopNav />
-          {children}
+          <AppWrapper>
+            {children}
+          </AppWrapper>
+          <Toaster />
           <Analytics />
         </body>
       </html>
-    </ClerkProvider>
-
   );
 }

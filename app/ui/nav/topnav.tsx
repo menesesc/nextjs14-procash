@@ -2,8 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { HomeIcon, MagnifyingGlassIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
-
+import { Search, Route } from "lucide-react"
 export default function TopNav() {
     const [header, setHeader] = useState(false)
     const scrollHeader = () => {
@@ -37,10 +36,10 @@ export default function TopNav() {
                     <nav>
                         <ul className='flex gap-[20px]'>
                             <li className='py-2'>                                
-                                <Link href='/search'><MagnifyingGlassIcon className="w-5 md:w-6" /></Link>
+                                <Link href='/search'><Search className="w-5 md:w-6" /></Link>
                             </li>
-                            <li className='bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-full'>
-                                <Link href='/login'><ArrowLeftOnRectangleIcon className="w-5 md:w-6" /></Link>
+                            <li className='py-2'>
+                                <Link href='/controlkm'><Route className="w-5 md:w-6" /></Link>
                             </li>
                         </ul>
                     </nav>
