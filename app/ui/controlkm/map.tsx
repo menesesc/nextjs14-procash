@@ -41,7 +41,7 @@ export default function Mapa() {
     const { dataxls, tecnico, fecha, setFecha, base, setDatapedidos, setDistancia, distancia } = useAppContext()
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: "AIzaSyA-P7adlhlQfseuBcfPD0jrRRUxAY11siY"
+        googleMapsApiKey: process.env.GOOGLE_MAP_API
     })
     
     const buscaPedidos = async() => {
