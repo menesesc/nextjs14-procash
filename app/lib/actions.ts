@@ -1,77 +1,45 @@
 'use server'
+import { NextResponse } from 'next/server'
 
-import { z } from "zod"
-import { sql } from "@vercel/postgres"
-import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
+export type PedidoProps = {
+  pedido: string,
+  cliente: string,
+  atm: string,
+  direccion: string,
+  localidad: string,
+  provincia: string,
+  tecnicoasistio: string,
+  fechaalta: string,
+  horaalta: string,
+  fechallegada: string,
+  horallegada: string,
+  fechafin: string,
+  horafin: string,
+  };
 
-const CreateInvoiceSchema = z.object({
-    id: z.string(),
-    customerId: z.string(),
-    amount: z.coerce.number(),
-    status: z.enum(['pending', 'paid']),
-    date: z.string()
-})
-
-const CreateInvoiceFormSchema = CreateInvoiceSchema.omit({ id: true, date: true })
-
-const UpdateInvoice = CreateInvoiceSchema.omit({ id: true, date: true })
-
-
-export async function createInvoice (formData: FormData) {
-    const {customerId, amount, status } = CreateInvoiceFormSchema.parse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
-    })
-
-    const amountInCents = amount * 100
-    const [date] = new Date().toISOString().split('T')
-
-    try{
-        await sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${customerId}, ${amountInCents},  ${status},  ${date})
-        `
-    } catch (error) {
-        return {
-            message: 'Database Error: Failed to Create Invoice.'
-        }
-    }
-
-    revalidatePath('/dashboard/invoices')
-    redirect ('/dashboard/invoices')
-}
-
-export async function updateInvoice(id: string, formData: FormData) {
-    const { customerId, amount, status } = UpdateInvoice.parse({
-      customerId: formData.get('customerId'),
-      amount: formData.get('amount'),
-      status: formData.get('status'),
-    });
-   
-    const amountInCents = amount * 100;
-   
+  export async function createPedido(pedido: PedidoProps) {
     try {
-      await sql`
-          UPDATE invoices
-          SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-          WHERE id = ${id}
-        `;
-    } catch (error) {
-      return { message: 'Database Error: Failed to Update Invoice.' };
-    }
-   
-    revalidatePath('/dashboard/invoices');
-    redirect('/dashboard/invoices');
-}
+      console.log(pedido)
+      const pedidoRes = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: pedido,
+      })
+      const pedidoJson = await pedidoRes.json()
+      return NextResponse.json(pedidoJson)
 
-export async function deleteInvoice(id: string) {
-    try {
-      await sql`DELETE FROM invoices WHERE id = ${id}`;
-      revalidatePath('/dashboard/invoices');
-      return { message: 'Deleted Invoice.' };
     } catch (error) {
-      return { message: 'Database Error: Failed to Delete Invoice.' };
+      console.log(error);
     }
-}
+  }
+export async function createBulkUPedidos(pedidos: PedidoProps[]) {
+    try {
+      for (const pedido of pedidos) {
+        await createPedido(pedido);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }

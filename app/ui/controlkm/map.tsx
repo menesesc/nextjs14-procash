@@ -7,34 +7,7 @@ const containerStyle = {
     height: "80vh"
 };
 
-const center = {
-  lat: -41.146267,
-  lng: -71.3132121
-};
-
-const points2 = [
-    {
-        lat: -41.146267,
-        lng: -71.3132121,
-        address: "Las Nalcas 8291, San Carlos de Bariloche"
-    },
-    {
-        lat: -41.146267,
-        lng: -71.3232121,
-        address: "Mitre 520, San Carlos de Bariloche"
-    },
-    {
-        lat: -41.146267,
-        lng: -71.3332121,
-        address: "Beschedt 1230, San Carlos de Bariloche"
-    },
-    {
-        lat: -41.146267,
-        lng: -71.3132121,
-        address: "Las Nalcas 8291, San Carlos de Bariloche"
-    }    
-]
-var points = []
+var points: any = []
 export default function Mapa() {
     const [map, setMap] = React.useState(null)
     const [directions, setDirections] = React.useState(null)
@@ -63,7 +36,7 @@ export default function Mapa() {
             id = id + 1
         }
     
-        points.sort((a, b) => {
+        points.sort((a: any, b: any) => {
             let x = a.id
             let y = b.id
             if (x < y) { return -1}
@@ -75,7 +48,7 @@ export default function Mapa() {
     const calculateDirections = async()=>{
         if(isLoaded && points.length > 1){
             const directionService = new window.google.maps.DirectionsService()
-            const waypoints = points.map((point)=>({
+            const waypoints = points.map((point: any)=>({
                 location: point.address
             }))
             

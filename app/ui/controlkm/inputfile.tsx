@@ -2,8 +2,9 @@
 import { useAppContext } from "@/app/context";
 import * as XLSX from "xlsx"
 import React from 'react';
+import { createBulkUPedidos } from "@/app/lib/actions";
 
-export default function InputFile (data, setdata) {
+export default function InputFile (data: any, setdata: any) {
     const { dataxls, setDataxls } = useAppContext()
     const handleFileUpload = (e: { target: { files: Blob[] } }) => {
         const reader = new FileReader();
@@ -14,12 +15,46 @@ export default function InputFile (data, setdata) {
           const sheetName = workbook.SheetNames[0]
           const sheet = workbook.Sheets[sheetName]
           const parsedData = XLSX.utils.sheet_to_json(sheet)
-          console.log(parsedData)
-          console.log(parsedData.filter(row => row.TECNICOASISTIO==="Meneses, Cristian"))
-          setDataxls(parsedData)
+
+          
+          //console.log(parsedData)
+
+          var pedidos = []        
+          for (let i = 0; i < parsedData.length; i++) {
+            var newpedido = {
+                "pedido": parsedData[i].pedido,
+                "cliente": parsedData[i].cliente,
+                "atm": parsedData[i].atm,
+                "direccion": parsedData[i].direccion, 
+                "localidad": parsedData[i].localidad,
+                "provincia": parsedData[i].provincia,
+                "tecnicoasistio": parsedData[i].tecnicoasistio,
+                "fechaalta": parsedData[i].fechaalta,
+                "horaalta": parsedData[i].horaalta,
+                "fechallegada": parsedData[i].fechallegada,
+                "horallegada": parsedData[i].horallegada,
+                "fechafin": parsedData[i].fechafin,
+                "horafin": parsedData[i].horafin
+            }
+            pedidos.push(newpedido)
+          }
+          
+          const parsedPedidos = pedidos
+          console.log(parsedPedidos)
+          saveData(parsedPedidos)
+          
+          // console.log(parsedData.filter(row => row.TECNICOASISTIO==="Meneses, Cristian"))
+          //setDataxls(parsedData)
         }
       }
 
+    async function saveData(data: any) {
+        try {
+            await createBulkUPedidos(data)
+          } catch (error) {
+            console.log(error)
+          }
+    }
     return (
         <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-center w-full">
