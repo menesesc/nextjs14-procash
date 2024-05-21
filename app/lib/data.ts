@@ -91,6 +91,7 @@ export async function fetchCardData() {
   }
 }
 
+
 const ITEMS_PER_PAGE = 10;
 export async function fetchFilteredInfo(
   query: string, 

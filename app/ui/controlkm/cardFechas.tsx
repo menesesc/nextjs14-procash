@@ -1,10 +1,4 @@
-'use client'
-import React from 'react';
-import Link from "next/link"
 import { useAppContext } from "@/app/context";
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
 import {
     Card,
     CardContent,
@@ -23,54 +17,63 @@ import {
   } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
 import { useToast } from "@/components/ui/use-toast"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, GitBranchPlus, LocateFixed } from "lucide-react"
+import { getFechasPedidos, getParadas } from '@/app/lib/actions';
+import { useState, useEffect } from "react";
 
+  
+  
 
 export default function CardFechas() {
-    const { dataxls, tecnico, setTecnico, setFecha, setBase, setDistancia } = useAppContext()
+    const { dataxls, tecnico, setFecha, setTecnico, base, setBase } = useAppContext()
+    const [ isLoading, setIsLoading ] = useState(false)
+    const [ fechas, setFechas ] = useState([])
     const { toast } = useToast()
 
-    const llenarLista = () => {
-        var unique = []
-        var fechas = []
-        var id = 1
-        
-        for (let i = 0; i < dataxls.length; i++) {
-            if (tecnico === dataxls[i].TECNICOASISTIO && !unique[dataxls[i].FECHALLEGADA] && dataxls[i].FECHALLEGADA !== undefined) {
-                var newfecha = {"ID": id, "FECHA": dataxls[i].FECHALLEGADA}
-                fechas.push(newfecha)
-                id = id + 1;
-                unique[dataxls[i].FECHALLEGADA] = 1
+
+    useEffect(() => {
+        const fetchFechas = async () => {
+            try {
+                setIsLoading(true)
+                const res = await getFechasPedidos(tecnico)
+                setFechas(res)
+            } catch (error) {
+                console.log(error)
             }
         }
-        
-        fechas.sort((a, b) => {
-            let x = a.FECHA.toUpperCase()
-            let y = b.FECHA.toUpperCase()
-            if (x < y) { return -1}
-            if (x > y) { return 1 }
-            return 0
-        } )
-        
-        return fechas.map((item, index) => (
-            <TableRow key={item.ID} onClick={() => { setFecha(item.FECHA)}}>
-                <TableCell>
-                    <div className="font-medium">{item.FECHA}</div>
-                </TableCell>
-            </TableRow>
-        ));
-    }
-    
-    return (
-        <Card>
-            <CardHeader className="flex flex-row items-center">
-                <div className="grid gap-2">
+        fetchFechas()
+
+        const fetchParadas = async () => {
+            try {
+                const res = await getParadas(tecnico)
+                for (let i = 0; i < res.length; i++) {
+                    if (res[i].esbase) {
+                        setBase(res[i].desc)
+                    }
+                }                
+
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchParadas()
+    }, [])
+
+    if (Array.isArray(fechas)) {
+        if (fechas.length > 0) {
+            return (
+                <Card>
+                    <CardHeader className="pb-3">
                     <CardTitle>
                         <div className='flex'>
-                            <div className='pt-2 flex-auto w-60'>
+                            <div className='pt-2 flex-auto w-64'>
                                 Fechas
                             </div>
                             <div className='flex-1'>
-                                <Button size="sm" className="gap-1" onClick={() => { setTecnico(''), setBase(''), setDistancia('')}}>                    
+                                <Button size="sm" className="gap-1" onClick={() => { setTecnico(''), setBase('')}}>                    
                                     <ArrowLeft className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -79,17 +82,33 @@ export default function CardFechas() {
                     <CardDescription>
                         {tecnico}
                     </CardDescription>
-                </div>
-            </CardHeader>
-            
-            <CardContent>
-            <Table>
-                <TableBody>
-                    {llenarLista()}
-                </TableBody>
-            </Table>
-            </CardContent>
-        </Card>
-    )
+                    <CardDescription>
+                        <Badge variant="destructive" className="text-xs">
+                            {base}
+                        </Badge>
+                    </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                    <Table>
+                        <TableBody>
+                        {isLoading && 
+                            <TableRow key='1'>
+                                <TableCell><div className="font-medium mt-2 mb-2">Cargando...</div></TableCell>
+                            
+                            </TableRow>
+                        }  
+                        {fechas?.map((doc) => (
+                            <TableRow key={doc.fechallegada} onClick={() => { setFecha(doc.fechallegada)}}>
+                                <TableCell>
+                                    <div className="font-medium mt-2 mb-2">{doc.fechallegada}</div>
+                                </TableCell>
+                            </TableRow>    
+                            ))}
+                        </TableBody>
+                    </Table>
+                    </CardContent>
+                </Card>
+            )
+        } 
+    }
 }
-

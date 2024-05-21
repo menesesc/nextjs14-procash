@@ -16,16 +16,18 @@ import { Label } from "@/components/ui/label"
 import { LocateFixed } from "lucide-react"
 import { Form } from '@/components/ui/form';
 import { useDebouncedCallback } from 'use-debounce';
+import { postParadaTecnico } from '@/app/lib/actions';
 
 export function DialogBase() {
     const WAIT_BETWEEN_CHANGE = 300
     const { tecnico, base, setBase } = useAppContext()
     const [open, setOpen] = React.useState(false)
+    const [data, setData] = React.useState('')
     let x = ''
     
     async function onSubmit() {
         try {
-          setBase(x)
+          const res = await postParadaTecnico(tecnico, data)
           setOpen(false);
         } catch (error) {
           console.error(error)
@@ -34,14 +36,14 @@ export function DialogBase() {
 
     const handleChange = useDebouncedCallback((term: string) => {
         if (term) {
-            x = term
+            setData(term)
         }
       }, WAIT_BETWEEN_CHANGE)
     
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="icon"><LocateFixed className="h-4 w-4" /></Button>
+        <Button variant="destructive"><LocateFixed className="h-4 w-4" /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

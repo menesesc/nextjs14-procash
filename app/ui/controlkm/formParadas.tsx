@@ -1,4 +1,3 @@
-"use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -25,6 +24,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useEffect, useState } from "react"
 import { DialogBase } from "./dialogBase"
 import { GitBranchPlus, LocateFixed } from "lucide-react"
+import { getParadas, postParadaPedido } from "@/app/lib/actions"
 
 
 const FormSchema = z.object({
@@ -38,8 +38,8 @@ const FormSchema = z.object({
   })
 
 export default function FormParadas() {
-    const { tecnico, setBase } = useAppContext()
-    const [data, setData] = useState<any[]>([])
+    const { tecnico, fecha, setBase } = useAppContext()
+    const [paradas, setParadas] = useState<any[]>([])
 
     const { toast } = useToast()
 
@@ -47,41 +47,31 @@ export default function FormParadas() {
         resolver: zodResolver(FormSchema),
     })
 
-    const getParadas = async () => {
-        try {
-            const response = await fetch('/api/tecnicos/t?tecnico='+tecnico, {
-                headers: {
-                    Accept: "application/json",
-                    method: "GET"
-                }})
-            
-            const jsonData = await response.json()
-            setData(jsonData)
-
-            for (let i = 0; i < jsonData.length; i++) {
-                if (jsonData[i].esbase) {
-                    setBase(jsonData[i].desc)
-                }
-            }
-            
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    }
 
     useEffect(() => {
-        getParadas()
-    })
+        const fetchParadas = async () => {
+            try {
+                let res = await getParadas(tecnico)
+                setParadas(res)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchParadas()
+    }, [])
 
-    function onSubmitParada(data: z.infer<typeof FormSchema>) {
-        toast({
-          title: "Agreste la siguiente parada:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-            </pre>
-          ),
-        })
+    async function onSubmitParada(data: z.infer<typeof FormSchema>) {
+        const pp = await postParadaPedido(tecnico, data.parada, fecha, data.hora)
+        if (pp) {
+            toast({
+                title: "Agreste la siguiente parada:",
+                description: data.parada
+              })      
+        } else {
+            toast({
+                title: "Error"
+            })
+        }
     }
         
     return (
@@ -104,10 +94,10 @@ export default function FormParadas() {
                                         </SelectTrigger>
                                     </FormControl>
                                     
-                                        { data ? (
+                                        { paradas ? (
                                             <SelectContent>
-                                            {data.map((item, index) => (
-                                                <SelectItem key={item.id} value={item.desc}>{ item.desc }</SelectItem>
+                                            {paradas.map((item, index) => (
+                                                <SelectItem key={item.desc} value={item.desc}>{ item.desc }</SelectItem>
                                             ))}
                                             </SelectContent>
                                         ): <SelectContent />}
@@ -126,10 +116,10 @@ export default function FormParadas() {
                                     <FormItem>
                                     <FormLabel>Hora</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="08:00" {...field} />
+                                        <Input placeholder="08:00:00" {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Escribe en formato hh:mm
+                                        Escribe en formato hh:mm:ss
                                     </FormDescription>
                                     <FormMessage />
                                     </FormItem>
@@ -139,7 +129,6 @@ export default function FormParadas() {
 
                         <Button type="submit">Agregar Parada</Button>
                         <DialogBase />
-                        <Button variant="outline" size="icon"><GitBranchPlus className="h-4 w-4" /></Button>
                         </div>
 
                     </form>

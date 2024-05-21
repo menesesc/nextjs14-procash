@@ -6,7 +6,7 @@ import InputFile from "../ui/controlkm/inputfile"
 export default function ControlKM() { 
   const { dataxls } = useAppContext()
   
-  if (dataxls.length ===0) {
+  if (dataxls.length === 0) {
     return (
       <InputFile />
     )

@@ -8,12 +8,13 @@ const pedidoSchema = new Schema({
     localidad: { type: String, required: true, trim: true},
     provincia: { type: String, required: true, trim: true},
     tecnicoasistio: { type: String,  trim: true},
+    zona: { type: String,  trim: true},
     fechaalta: { type: String,  trim: true},
     horaalta: { type: String,  trim: true},
     fechallegada: { type: String,  trim: true},
     horallegada: { type: String,  trim: true},
     fechafin: { type: String,  trim: true},
     horafin: { type: String,  trim: true},
-}, {timestamps: true})
+}, {timestamps: false})
 
 export default models.Pedido || model('Pedido', pedidoSchema, 'pedidos')
