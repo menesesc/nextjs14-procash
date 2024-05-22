@@ -20,7 +20,7 @@ import { postParadaTecnico } from '@/app/lib/actions';
 
 export function DialogBase() {
     const WAIT_BETWEEN_CHANGE = 300
-    const { tecnico, base, setBase } = useAppContext()
+    const { tecnico, base, setBase }:any = useAppContext()
     const [open, setOpen] = React.useState(false)
     const [data, setData] = React.useState('')
     let x = ''

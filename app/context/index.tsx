@@ -1,7 +1,11 @@
 'use client';
+
+import React from "react";
 import { createContext, useState, useContext } from "react";
 
-const AppContext = createContext({
+const AppContext = createContext({})
+  /*
+  {
     dataxls: '',
     setDataxls: '',
     tecnico: '',
@@ -17,6 +21,7 @@ const AppContext = createContext({
     distancia: '',
     setDistancia: ''
 })
+*/
 
 export function AppWrapper({children }: {
     children: React.ReactNode;
@@ -32,13 +37,14 @@ export function AppWrapper({children }: {
 
     return (
         <AppContext.Provider value={{
-            dataxls, setDataxls, 
+            dataxls, setDataxls,
             tecnico, setTecnico, 
             base, setBase,
             datafechas, setDatafechas, 
             fecha, setFecha, 
             dataPedidos, setDatapedidos,
-            distancia, setDistancia}}>
+            distancia, setDistancia
+          }}>
             {children}
         </AppContext.Provider>
     )

@@ -38,7 +38,7 @@ const FormSchema = z.object({
   })
 
 export default function FormParadas() {
-    const { tecnico, fecha, setBase } = useAppContext()
+    const { tecnico, fecha, setBase }:any = useAppContext()
     const [paradas, setParadas] = useState<any[]>([])
 
     const { toast } = useToast()
@@ -51,7 +51,7 @@ export default function FormParadas() {
     useEffect(() => {
         const fetchParadas = async () => {
             try {
-                let res = await getParadas(tecnico)
+                let res:any = await getParadas(tecnico)
                 setParadas(res)
             } catch (error) {
                 console.log(error)

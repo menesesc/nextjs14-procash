@@ -23,10 +23,10 @@ import { useState, useEffect, useRef } from "react";
   
 
 export default function CardTecnicos() {
-    const { dataxls, tecnico, setTecnico } = useAppContext()
+    const { dataxls, tecnico, setTecnico }:any = useAppContext()
     const [ error, setError ] = useState()
     const [ isLoading, setIsLoading ] = useState(false)
-    const [ tecnicos, setTecnicos ] = useState([])
+    const [ tecnicos, setTecnicos ] = useState<any[]>([])
     const { toast } = useToast()
 
     const abortControllerRef = useRef<AbortController | null>(null);
@@ -36,9 +36,9 @@ export default function CardTecnicos() {
             setIsLoading(true);
 
             try {
-                const res = await getTecnicos()
+                const res:any = await getTecnicos()
                 setTecnicos(res)
-            } catch (e) {
+            } catch (e:any) {
                 console.log(e)
                 setError(e)
             } finally {

@@ -9,39 +9,16 @@ const containerStyle = {
 
 var points: any = []
 export default function Mapa() {
-    const [map, setMap] = React.useState(null)
+    const [map, setMap]:any = React.useState(null)
     const [directions, setDirections] = React.useState(null)
-    const { dataxls, tecnico, fecha, setFecha, base, dataPedidos, setDistancia, distancia } = useAppContext()
+    const { dataxls, tecnico, fecha, setFecha, base, dataPedidos, setDistancia, distancia }:any = useAppContext()
+    const apigoogle:any = process.env.GOOGLE_MAP_API
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: process.env.GOOGLE_MAP_API
+        googleMapsApiKey: apigoogle
     })
     
-    const calculateDirections = async()=>{
-        if(isLoaded && points.length > 1){
-            const directionService = new window.google.maps.DirectionsService()
-            const waypoints = points.map((point: any)=>({
-                location: point.address
-            }))
-            
-            const request = {
-                origin: waypoints[0].location,
-                destination: waypoints[waypoints.length -1].location,
-                waypoints: waypoints.slice(1, -1),
-                travelMode: window.google.maps.TravelMode.DRIVING
-            }
-
-            const res = await directionService.route(request)
-            if (res.status === 'OK') {
-                let km = 0
-                for (let i = 0; i < res.routes[0].legs.length; i++) {
-                    km += res.routes[0].legs[i].distance.value /1000
-                }
-                setDistancia(km.toFixed(2))
-                setDirections(res)
-            }
-        }
-    }
+    
 
     useEffect(()=>{
         var id = 1
@@ -57,8 +34,35 @@ export default function Mapa() {
             id = id + 1
 
         }
+
+        const calculateDirections = async()=>{
+            if(isLoaded && points.length > 1){
+                const directionService = new window.google.maps.DirectionsService()
+                const waypoints = points.map((point: any)=>({
+                    location: point.address
+                }))
+                
+                const request = {
+                    origin: waypoints[0].location,
+                    destination: waypoints[waypoints.length -1].location,
+                    waypoints: waypoints.slice(1, -1),
+                    travelMode: window.google.maps.TravelMode.DRIVING
+                }
+    
+                const res:any = await directionService.route(request)
+                if (res.status === 'OK') {
+                    let km = 0
+                    for (let i = 0; i < res.routes[0].legs.length; i++) {
+                        km += res.routes[0].legs[i].distance.value /1000
+                    }
+                    setDistancia(km.toFixed(2))
+                    setDirections(res)
+                }
+            }
+        }
+
         calculateDirections()
-    }, [dataPedidos])
+    }, [dataPedidos, isLoaded, setDistancia]);
 
     return isLoaded ? (
         <div>

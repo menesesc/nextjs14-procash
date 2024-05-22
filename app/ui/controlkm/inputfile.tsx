@@ -5,19 +5,19 @@ import React, { useState } from 'react';
 import { agregarBases, createBulkUPedidos } from "@/app/lib/actions";
 
 export default function InputFile (data: any, setdata: any) {
-    const { dataxls, setDataxls } = useAppContext()
+    const { dataxls, setDataxls }:any = useAppContext()
     const [isLoading, setIsLoading] = useState(false);
     const [textLoading, setTextLoading] = useState('')
 
     const handleFileUpload = (e: { target: { files: Blob[] } }) => {
         const reader = new FileReader();
         reader.readAsBinaryString(e.target.files[0])
-        reader.onload = (e) => {
+        reader.onload = (e:any) => {
           const data = e.target.result
           const workbook = XLSX.read(data, { type: "binary" })
           const sheetName = workbook.SheetNames[0]
           const sheet = workbook.Sheets[sheetName]
-          const parsedData = XLSX.utils.sheet_to_json(sheet)
+          const parsedData:any = XLSX.utils.sheet_to_json(sheet)
 
           
           var pedidos = []        
@@ -72,7 +72,7 @@ export default function InputFile (data: any, setdata: any) {
                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Haga click para subir un archivo</span> o arrastre y suelte aqui</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">Archivo de Excel (.xlsx, .xls)</p>
                     </div>
-                    <input id="dropzone-file" type="file" accept=".xlsx, .xls" className="hidden" onChange={handleFileUpload} />
+                    <input id="dropzone-file" type="file" accept=".xlsx, .xls" className="hidden" onChange={() => handleFileUpload} />
                 </label>
               )}
             </div> 

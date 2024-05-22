@@ -26,9 +26,9 @@ import { useState, useEffect } from "react";
   
 
 export default function CardFechas() {
-    const { dataxls, tecnico, setFecha, setTecnico, base, setBase } = useAppContext()
+    const { dataxls, tecnico, setFecha, setTecnico, base, setBase }:any = useAppContext()
     const [ isLoading, setIsLoading ] = useState(false)
-    const [ fechas, setFechas ] = useState([])
+    const [ fechas, setFechas ] = useState<any[]>([])
     const { toast } = useToast()
 
 
@@ -36,7 +36,7 @@ export default function CardFechas() {
         const fetchFechas = async () => {
             try {
                 setIsLoading(true)
-                const res = await getFechasPedidos(tecnico)
+                const res:any = await getFechasPedidos(tecnico)
                 setFechas(res)
             } catch (error) {
                 console.log(error)
@@ -46,7 +46,7 @@ export default function CardFechas() {
 
         const fetchParadas = async () => {
             try {
-                const res = await getParadas(tecnico)
+                const res:any = await getParadas(tecnico)
                 for (let i = 0; i < res.length; i++) {
                     if (res[i].esbase) {
                         setBase(res[i].desc)
