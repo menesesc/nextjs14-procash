@@ -4,7 +4,7 @@ import Dashboard from "../ui/controlkm/dashboard"
 import InputFile from "../ui/controlkm/inputfile"
 
 export default function ControlKM() { 
-  const { dataxls } = useAppContext()
+  const { dataxls }:any = useAppContext()
   
   if (dataxls.length === 0) {
     return (
