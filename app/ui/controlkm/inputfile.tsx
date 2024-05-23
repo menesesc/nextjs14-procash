@@ -9,11 +9,17 @@ export default function InputFile (data: any, setdata: any) {
     const [isLoading, setIsLoading] = useState(false);
     const [textLoading, setTextLoading] = useState('')
 
-    const handleFileUpload = (e: { target: { files: Blob[] } }) => {
+    const handleFileUpload = (e: any ) => {
+        if (!e.target.files || e.target.files.length === 0) {
+          // you can display the error to the user
+          console.error("Select a file");
+          return;
+        }
+        
         const reader = new FileReader();
         reader.readAsBinaryString(e.target.files[0])
-        reader.onload = (e:any) => {
-          const data = e.target.result
+        reader.onload = (e) => {
+          const data = e.target!.result
           const workbook = XLSX.read(data, { type: "binary" })
           const sheetName = workbook.SheetNames[0]
           const sheet = workbook.Sheets[sheetName]
@@ -72,7 +78,7 @@ export default function InputFile (data: any, setdata: any) {
                         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Haga click para subir un archivo</span> o arrastre y suelte aqui</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">Archivo de Excel (.xlsx, .xls)</p>
                     </div>
-                    <input id="dropzone-file" type="file" accept=".xlsx, .xls" className="hidden" onChange={() => handleFileUpload} />
+                    <input id="dropzone-file" type="file" accept=".xlsx, .xls" className="hidden" onChange={handleFileUpload} />
                 </label>
               )}
             </div> 
