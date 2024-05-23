@@ -43,7 +43,7 @@ export async function agregarBases() {
       const bases = await Tecnico.aggregate(JSON.parse(search))
       let pedidosBases = []
       for (let i = 0; i < bases.length; i++) {
-        const fechas = await getFechasPedidos(bases[i].tecnico)
+        const fechas:any = await getFechasPedidos(bases[i].tecnico)
         for (let j = 0; j < fechas.length; j++) {
           let newPedidoIn = {"pedido": "-", "cliente": "BASE", "atm": '-', "direccion": bases[i].desc, "localidad": ".", "provincia": ".", "tecnicoasistio": bases[i].tecnico, "zona": "", "fechaalta": fechas[j].fechallegada, "horaalta": "00:01", "fechallegada": fechas[j].fechallegada, "horallegada": "00:01", "fechafin": fechas[j].fechallegada, "horafin": "00:01",}
           let newPedidoOut = {"pedido": "-", "cliente": "BASE", "atm": '-', "direccion": bases[i].desc, "localidad": ".", "provincia": ".", "tecnicoasistio": bases[i].tecnico, "zona": "", "fechaalta": fechas[j].fechallegada, "horaalta": "23:59", "fechallegada": fechas[j].fechallegada, "horallegada": "23:59", "fechafin": fechas[j].fechallegada, "horafin": "23:59",}
@@ -66,14 +66,14 @@ export async function postParadaTecnico(tecnico: string, domicilio: string){
     try {
       // crea parada
       connectDB()
-      let paradas = await getParadas(tecnico)
+      let paradas:any = await getParadas(tecnico)
       let post = (paradas.length === 0) ? [{"tecnico": tecnico, "desc": domicilio, "esbase": true}] : [{"tecnico": tecnico, "desc": domicilio, "esbase": false}]
       await Tecnico.insertMany(post)
       
       //agrega info si es base a la bd
       if (paradas.length === 0) {
         let pedidosBases = []
-        const fechas = await getFechasPedidos(tecnico)
+        const fechas:any = await getFechasPedidos(tecnico)
         for (let j = 0; j < fechas.length; j++) {
           let newPedidoIn = {"pedido": "-", "cliente": "BASE", "atm": '-', "direccion": domicilio, "localidad": ".", "provincia": ".", "tecnicoasistio": tecnico, "zona": "", "fechaalta": fechas[j].fechallegada, "horaalta": "00:01", "fechallegada": fechas[j].fechallegada, "horallegada": "00:01", "fechafin": fechas[j].fechallegada, "horafin": "00:01"}
           let newPedidoOut = {"pedido": "-", "cliente": "BASE", "atm": '-', "direccion": domicilio, "localidad": ".", "provincia": ".", "tecnicoasistio": tecnico, "zona": "", "fechaalta": fechas[j].fechallegada, "horaalta": "23:59", "fechallegada": fechas[j].fechallegada, "horallegada": "23:59", "fechafin": fechas[j].fechallegada, "horafin": "23:59"}
