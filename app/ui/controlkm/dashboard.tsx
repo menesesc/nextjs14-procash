@@ -8,7 +8,7 @@ import CardPedidos from './cardPedidos';
 import CardMapa from './cardMapa';
 
 export default function Dashboard() {
-    const { tecnico, fecha } = useAppContext()
+    const { tecnico, fecha }:any = useAppContext()
     if (tecnico.length === 0) {
         return (
             <div>
