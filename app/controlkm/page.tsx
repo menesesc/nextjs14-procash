@@ -6,13 +6,14 @@ import InputFile from "../ui/controlkm/inputfile"
 export default function ControlKM() { 
   const { dataxls }:any = useAppContext()
   
-  if (dataxls.length === 0) {
-    return (
-      <InputFile />
-    )
-  }
-  return (
-      <Dashboard />
-  )
+  return(<h1>En mantenimiento</h1>)
+  // if (dataxls.length === 0) {
+  //   return (
+  //     <InputFile />
+  //   )
+  // }
+  // return (
+  //     <Dashboard />
+  // )
 }
 

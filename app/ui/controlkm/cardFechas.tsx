@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, GitBranchPlus, LocateFixed } from "lucide-react"
-import { getFechasPedidos, getParadas } from '@/app/lib/actions';
+import { getFechasPedidos, getParadas, getTotalKmsFecha } from '@/app/lib/actions';
 import { useState, useEffect } from "react";
 
   
@@ -29,6 +29,8 @@ export default function CardFechas() {
     const { dataxls, tecnico, setFecha, setTecnico, base, setBase }:any = useAppContext()
     const [ isLoading, setIsLoading ] = useState(false)
     const [ fechas, setFechas ] = useState<any[]>([])
+    const [ kms, setKms ] = useState<any[]>([])
+    const [ totalKms, setTotalKms ] = useState(0)
     const { toast } = useToast()
 
 
@@ -43,6 +45,9 @@ export default function CardFechas() {
             }
         }
         fetchFechas()
+
+
+        
 
         const fetchParadas = async () => {
             try {

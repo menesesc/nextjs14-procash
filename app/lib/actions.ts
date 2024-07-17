@@ -3,7 +3,6 @@ import { connectDB } from '@/app/lib/mongoose'
 import Pedidos from '@/app/lib/models/Pedido'
 import Tecnico from '@/app/lib//models/Tecnico';
 
-
 export type PedidoProps = {
   pedido: string,
   cliente: string,
@@ -60,6 +59,72 @@ export async function agregarBases() {
       console.log(error);
     }
   }
+
+export async function getTotalKmsFecha(tecnico: string, fecha: string) {
+  var points: any = []
+  var id = 1
+  let km = 0
+  try {
+      connectDB()
+
+      const apigoogle:any = process.env.GOOGLE_MAP_API
+
+      const dataPedidos:any = await getPedidos(tecnico, fecha)
+      console.log(dataPedidos)
+      points = []
+      for (let i =0; i < dataPedidos.length; i++) {
+            let newPoint
+            if (dataPedidos[i].cliente === "BASE") {
+                newPoint = {"id": id, "address": dataPedidos[i].direccion}
+            } else {
+                newPoint = {"id": id, "address": dataPedidos[i].cliente + ", " + dataPedidos[i].direccion + "," + dataPedidos[i].localidad + "," + dataPedidos[i].provincia}
+            }
+            points.push(newPoint)
+            id = id + 1
+        }
+
+      if(points.length > 1){
+        const directionService = new window.google.maps.DirectionsService()
+        const waypoints = points.map((point: any)=>({
+            location: point.address
+        }))
+        
+        const request = {
+            origin: waypoints[0].location,
+            destination: waypoints[waypoints.length -1].location,
+            waypoints: waypoints.slice(1, -1),
+            travelMode: window.google.maps.TravelMode.DRIVING
+        }
+
+        const res:any = await directionService.route(request)
+        if (res.status === 'OK') {
+            for (let i = 0; i < res.routes[0].legs.length; i++) {
+                km += res.routes[0].legs[i].distance.value /1000
+            }
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      return km.toFixed(0)
+    }
+  }
+
+export async function getTotalKms(tecnico: string) {
+  let totalKms = 0
+  try {
+    connectDB()
+    const fechas:any = await getFechasPedidos(tecnico)
+    for (let i =0; i < fechas.length; i++) {
+      let kms = await getTotalKmsFecha(tecnico, fechas[i].fechallegada)
+      totalKms += +(kms) 
+    }
+  } catch (error) {
+    console.log(error)
+  } finally {
+    return totalKms
+  }
+}
 
 export async function postParadaTecnico(tecnico: string, domicilio: string){
   if (domicilio.length > 0) {
